@@ -25,7 +25,13 @@ namespace EntityFramework.Filters
         public override DbExpression Visit(DbScanExpression expression)
         {
             // a bit harder to get the metadata in CSpace
-            var item = expression.Target.ElementType.MetadataProperties.First(p => p.Name == "Configuration");
+            var item = expression.Target.ElementType.MetadataProperties.FirstOrDefault(p => p.Name == "Configuration");
+            // avoid to throw exception if one entity has no configuration
+            if (item == null)
+            {
+                throw new Exception();
+                return base.Visit(expression);
+            }
 
             // using reflection to get the Annotations property as EntityTtypeConfiguration is an internal class in EF
             Dictionary<string, object> annotations = new Dictionary<string, object>();
